@@ -73,8 +73,8 @@ body{
 /* ── masthead ─────────────────────────────── */
 .masthead{
   padding:40px 0 26px;
-  display:grid;grid-template-columns:minmax(0,1fr) auto;
-  align-items:center;column-gap:18px;row-gap:16px;
+  display:grid;grid-template-columns:minmax(0,max-content) auto;
+  justify-content:start;align-items:center;column-gap:22px;row-gap:16px;
 }
 .mast-text{min-width:0}
 .avatar{
@@ -397,18 +397,22 @@ main.innerHTML = DATA.map(g => `
 
 /* 옆으로 더 있을 때만 "밀어서 보기" 안내 */
 const rails = [...document.querySelectorAll(".rail")];
-function hints(){
-  rails.forEach(r => {
-    const tip = r.parentElement.querySelector(".swipe");
-    tip.hidden = r.scrollWidth <= r.clientWidth + 4 || r.scrollLeft > 8;
-  });
+const tipOf = r => r.parentElement.querySelector(".swipe");
+const hint = r => { tipOf(r).hidden = r.scrollWidth <= r.clientWidth + 4; };
+
+rails.forEach(r => {
+  hint(r);
+  r.addEventListener("scroll", () => {
+    tipOf(r).style.opacity = r.scrollLeft > 8 ? "0" : "1";
+  }, {passive:true});
+});
+
+if (window.ResizeObserver){
+  const ro = new ResizeObserver(es => es.forEach(e => hint(e.target)));
+  rails.forEach(r => ro.observe(r));
+} else {
+  addEventListener("resize", () => rails.forEach(hint));
 }
-rails.forEach(r => r.addEventListener("scroll", () => {
-  const tip = r.parentElement.querySelector(".swipe");
-  tip.style.opacity = r.scrollLeft > 8 ? "0" : "1";
-}, {passive:true}));
-addEventListener("resize", hints);
-hints();
 
 /* 구분 칩: 누르면 해당 섹션으로 이동, 스크롤에 따라 현재 위치 표시 */
 const chipBar = document.getElementById("chips");
