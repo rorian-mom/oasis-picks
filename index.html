@@ -192,8 +192,8 @@ main{padding:26px 0 90px}
   display:grid;place-items:center;overflow:hidden;
 }
 .thumb img{
-  width:100%;height:100%;object-fit:contain;display:block;padding:8px;
-  transition:transform .3s ease;
+  width:100%;height:100%;object-fit:cover;object-position:center 45%;
+  display:block;transition:transform .3s ease;
 }
 .body{display:flex;flex-direction:column;gap:8px;padding:12px 13px 11px;flex:1}
 .card h3{
@@ -406,7 +406,7 @@ main.innerHTML = DATA.map(g => `
   <section class="shelf" id="s-${g.id}" data-shelf="${g.id}">
     <div class="shelf-head">
       <h2>${esc(g.title).replace(/\n/g, "<br>")}</h2>
-      <span class="swipe" hidden>밀어서 보기 →</span>
+      <span class="swipe">밀어서 보기 →</span>
     </div>
     ${g.note ? `<p class="shelf-note">${esc(g.note)}</p>` : ""}
     <div class="rail">
@@ -429,12 +429,7 @@ const rails = [...document.querySelectorAll(".rail")];
 const tipOf = r => r.parentElement.querySelector(".swipe");
 const hint = r => { tipOf(r).hidden = r.scrollWidth <= r.clientWidth + 4; };
 
-rails.forEach(r => {
-  hint(r);
-  r.addEventListener("scroll", () => {
-    tipOf(r).style.opacity = r.scrollLeft > 8 ? "0" : "1";
-  }, {passive:true});
-});
+rails.forEach(hint);
 
 if (window.ResizeObserver){
   const ro = new ResizeObserver(es => es.forEach(e => hint(e.target)));
